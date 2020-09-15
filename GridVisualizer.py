@@ -33,22 +33,29 @@ class Grid:
             return False
 
     # will return 'None' if a value outside the grid is accessed
-
     def get(self, x, y):
         if self.valid_cell(x, y):
             return self.matrix[x][y]
+
+    # will fill the grid with random values from [a, b]
+    def setRndValues(self, a, b):
+        for x, y in product(range(self.width), range(self.height)):
+            self.set(x, y, rnd.randint(a, b))
 
 
 class Visualizer:
 
     # TODO: Change Grid's size while visualizing
     def __init__(self, g: Grid, window_width, window_height, border_size):
-        self.g = g  # Grid to
+        self.g = g
         self.border_size = border_size
         self.screen = pygame.display.set_mode((window_width, window_height), pygame.RESIZABLE)
         self.border_window_ratio = self.border_size / window_width
         self.__update_window_size(window_width, window_height)
-        self.siz = (window_width, window_height)
+
+        # default color_layout (TODO: method to change this)
+        self.color_layout = {0: pygame.Color("black"),
+                             1: pygame.Color("white")}
 
         pygame.init()
 
@@ -82,12 +89,17 @@ class Visualizer:
                 self.update()
 
     def __draw_grid(self):
+        #  draw cells
         for x, y in product(range(self.g.width), range(self.g.height)):
-            rnd_color = (rnd.randint(1,255), rnd.randint(1,255), rnd.randint(1,255))
+            # rnd_color = (rnd.randint(1, 255), rnd.randint(1, 255), rnd.randint(1, 255))
+            c = self.color_layout[self.g.get(x, y)]
             x0 = (x * (self.border_size + self.cell_size) + self.border_size)
             y0 = (y * (self.border_size + self.cell_size) + self.border_size)
-            pygame.draw.rect(self.screen, rnd_color, pygame.Rect(x0, y0, math.ceil(self.cell_size), math.ceil(self.cell_size)))
-            
+            pygame.draw.rect(self.screen, c,
+                             pygame.Rect(x0, y0, math.ceil(self.cell_size),
+                                         math.ceil(self.cell_size)))
+
+        # draw cell borders
         for x in range(self.g.width + 1):
             for o in range(self.border_size):
                 x0 = (x * (self.border_size + self.cell_size)) + o
@@ -97,8 +109,6 @@ class Visualizer:
             for o in range(self.border_size):
                 y0 = (y * (self.border_size + self.cell_size)) + o
                 pygame.draw.line(self.screen, (0, 0, 0), (0, y0), (self.res_x - 1, y0), 1)
-
-
 
     @staticmethod
     def get_max_cell_size(cell_count, border_size, window_size):
