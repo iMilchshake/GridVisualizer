@@ -1,10 +1,9 @@
-import numpy as np
-import tkinter as tk
-import random as rnd
-import pygame
 import math
+import random as rnd
 import sys
 from itertools import product
+import numpy as np
+import pygame
 
 
 class Grid:
@@ -46,18 +45,19 @@ class Grid:
 class Visualizer:
 
     # TODO: Change Grid's size while visualizing
-    def __init__(self, g: Grid, window_width, window_height, border_size):
+    def __init__(self, g: Grid, window_width, window_height, border_size, window_name="Grid Visualizer"):
         self.g = g
         self.border_size = border_size
         self.screen = pygame.display.set_mode((window_width, window_height), pygame.RESIZABLE)
         self.border_window_ratio = self.border_size / window_width
         self.__update_window_size(window_width, window_height)
 
-        # default color_layout (TODO: method to change this)
+        # default color_layout (TODO: method to change color_layout)
         self.color_layout = {0: pygame.Color("black"),
                              1: pygame.Color("white")}
 
         pygame.init()
+        pygame.display.set_caption(window_name)
 
     #  updates variables, according to (new) window size
     def __update_window_size(self, window_width, window_height):
