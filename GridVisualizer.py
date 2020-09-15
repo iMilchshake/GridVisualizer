@@ -32,6 +32,7 @@ class Grid:
             return False
 
     # will return 'None' if a value outside the grid is accessed
+
     def get(self, x, y):
         if self.valid_cell(x, y):
             return self.matrix[x][y]
@@ -40,20 +41,27 @@ class Grid:
 class Visualizer:
 
     # TODO: Change Grid's size while visualizing
-    # TODO: Dynamic border_size
     def __init__(self, g: Grid, window_width, window_height, border_size):
         self.g = g  # Grid to
         self.border_size = border_size
         self.screen = pygame.display.set_mode((window_width, window_height), pygame.RESIZABLE)
+        self.border_window_ratio = self.border_size / window_width
         self.__update_window_size(window_width, window_height)
+        self.siz=(window_width, window_height)
+
         pygame.init()
 
     #  updates variables, according to (new) window size
     def __update_window_size(self, window_width, window_height):
+        window_width, window_height = self.get_max_grid_size(window_width, window_height)
+
+        self.border_size = math.ceil(window_width * self.border_window_ratio)
+        print(self.border_size)
         self.cell_size = min(Visualizer.get_max_cell_size(self.g.width, self.border_size, window_width),
                              Visualizer.get_max_cell_size(self.g.height, self.border_size, window_height))
         self.res_x = Visualizer.get_window_size(self.g.width, self.border_size, self.cell_size)
         self.res_y = Visualizer.get_window_size(self.g.height, self.border_size, self.cell_size)
+        print((self.res_x, self.res_y), (window_width, window_height))
 
     #  call this to redraw the grid
     def update(self):
@@ -90,3 +98,13 @@ class Visualizer:
     @staticmethod
     def get_window_size(cell_count, border_size, cell_size):
         return ((cell_count + 1) * border_size) + (cell_count * cell_size)
+
+    def get_max_grid_size(self, w, h):
+        h_size = Visualizer.get_max_cell_size(self.g.width, self.border_size, w)
+        v_size = Visualizer.get_max_cell_size(self.g.height, self.border_size, h)
+        if h_size < v_size:
+            new_h = Visualizer.get_window_size(self.g.height, self.border_size, h_size)
+            return w, new_h
+        else:
+            new_w = Visualizer.get_window_size(self.g.width, self.border_size, v_size)
+            return new_w, h
