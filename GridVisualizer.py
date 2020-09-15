@@ -4,6 +4,7 @@ import random as rnd
 import pygame
 import math
 import sys
+from itertools import product
 
 
 class Grid:
@@ -47,7 +48,7 @@ class Visualizer:
         self.screen = pygame.display.set_mode((window_width, window_height), pygame.RESIZABLE)
         self.border_window_ratio = self.border_size / window_width
         self.__update_window_size(window_width, window_height)
-        self.siz=(window_width, window_height)
+        self.siz = (window_width, window_height)
 
         pygame.init()
 
@@ -81,6 +82,12 @@ class Visualizer:
                 self.update()
 
     def __draw_grid(self):
+        for x, y in product(range(self.g.width), range(self.g.height)):
+            rnd_color = (rnd.randint(1,255), rnd.randint(1,255), rnd.randint(1,255))
+            x0 = (x * (self.border_size + self.cell_size) + self.border_size)
+            y0 = (y * (self.border_size + self.cell_size) + self.border_size)
+            pygame.draw.rect(self.screen, rnd_color, pygame.Rect(x0, y0, math.ceil(self.cell_size), math.ceil(self.cell_size)))
+            
         for x in range(self.g.width + 1):
             for o in range(self.border_size):
                 x0 = (x * (self.border_size + self.cell_size)) + o
@@ -91,9 +98,11 @@ class Visualizer:
                 y0 = (y * (self.border_size + self.cell_size)) + o
                 pygame.draw.line(self.screen, (0, 0, 0), (0, y0), (self.res_x - 1, y0), 1)
 
+
+
     @staticmethod
     def get_max_cell_size(cell_count, border_size, window_size):
-        return (window_size - ((cell_count + 1) * border_size)) / cell_count
+        return math.floor(window_size - ((cell_count + 1) * border_size)) / cell_count
 
     @staticmethod
     def get_window_size(cell_count, border_size, cell_size):
